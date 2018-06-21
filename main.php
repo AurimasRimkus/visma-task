@@ -12,9 +12,9 @@ This is a client registration system.
   <option> can be (inputs between [] are optional):
   -add [FirstName LastName Email PhoneNumber [PhoneNumber2] [Comment]], if you want to add a new client
   -edit [Email], if you want to edit a existing client
-  -delete, if you want to delete a client
+  -delete [Email], if you want to delete a client
   -help, to display this help message
-  -import, if you want to import data from .csv file
+  -import [Filename], if you want to import data from .csv file
 
 <?php
 } else {
@@ -175,9 +175,14 @@ This is a client registration system.
 		    }
 		    break;
 		case "-delete":
-		    echo "Deleting a client \n";
-		    echo "Enter email of the user you want to delete: ";
-		    $email = trim(fgets($handle));
+			if($argc==2){
+			    echo "Deleting a client \n";
+			    echo "Enter email of the user you want to delete: ";
+			    $email = trim(fgets($handle));
+			}elseif($argc == 3){
+				echo "Deleting a client \n";
+				$email = $argv[2];
+			}
 			if(!deleteClient($email)){
 				echo "There is no user associated with this e-mail.\n";
 			}else{
@@ -202,11 +207,11 @@ This is a client registration system.
 				echo "Error when opening the file, try again (maybe there is no such file?)\n";
 				break;
 			}
-			while(!feof($file)){
+			while(!feof($file)){ // while not eof
 				$arrayOfData = explode(";", fgets($file));
-				if(sizeof($arrayOfData)!=6){
-					echo "Bad file format\n";
-					break;
+				if(sizeof($arrayOfData)!=6 || !filter_var($arrayOfData[2], FILTER_VALIDATE_EMAIL)){
+					echo "Bad line format\n";
+					continue;
 				}
 				if(addClient($arrayOfData[0], $arrayOfData[1], $arrayOfData[2], $arrayOfData[3], $arrayOfData[4], $arrayOfData[5])){
 					//I don't know if I need this - it can flood the console with messages if .csv file is large
@@ -214,7 +219,6 @@ This is a client registration system.
 		        }else{
 		        	//This can flood console, too, but it's useful information - maybe output to error file would be a better solution?
 		        	echo "E-mail is already in use, client not added (". $arrayOfData[2] . ")\n";
-		        	continue;
 		        }
 			}
 			fclose($file);
@@ -227,6 +231,7 @@ This is a client registration system.
 
 function addClient($firstname, $lastname, $email, $phone1, $phone2="", $comment=""){
 	include 'config.php';
+
 	try{
 	    $stmt = $pdo->prepare('INSERT INTO users VALUES(?, ?, ?, ?, ?, ?)');
 	    $stmt->execute([$firstname, $lastname, $email, $phone1, empty($phone2)?NULL:$phone2, empty($comment)?NULL:$comment]);
