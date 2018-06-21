@@ -178,14 +178,7 @@ This is a client registration system.
 		    echo "Deleting a client \n";
 		    echo "Enter email of the user you want to delete: ";
 		    $email = trim(fgets($handle));
-		    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-		    	echo "You entered a invalid email, please try again";
-		    	break;
-		    }
-			$stmt = $pdo->prepare("DELETE FROM users WHERE email = ?");
-			$stmt->execute([$email]);
-			$deletedCount = $stmt->rowCount();
-			if($deletedCount == 0){
+			if(!deleteClient($email)){
 				echo "There is no user associated with this e-mail.\n";
 			}else{
 				echo "User deleted.\n";
@@ -247,5 +240,20 @@ function addClient($firstname, $lastname, $email, $phone1, $phone2="", $comment=
 		}
 	}
 	return true;
+}
+
+function deleteClient($email){
+	include 'config.php';
+	if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+		return false;
+	}
+	$stmt = $pdo->prepare("DELETE FROM users WHERE email = ?");
+	$stmt->execute([$email]);
+	$deletedCount = $stmt->rowCount();
+	if($deletedCount == 0){
+		return false;
+	}else{
+		return true;
+	}
 }
 ?>
