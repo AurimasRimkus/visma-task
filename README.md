@@ -1,2 +1,5 @@
 # Task for Visma  
-Usage: *php main.php --help*
+Usage:  
+1) Add database info in config.php  
+2) Import db.sql  
+3) *php main.php --help*

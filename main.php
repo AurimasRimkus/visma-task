@@ -1,4 +1,11 @@
 <?php
+/*
+ * Author - Aurimas Rimkus, me@aurimasrimkus.eu
+ * For Visma
+ * I don't really know why didn't I use OOP, but the project was quite simple, so I decided
+ * against it. It would definetely be okay & pretty easy to make this to object-oriented program
+ * 
+ */
 include 'config.php'; // File for DB configuration
 
 if ($argc == 1 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
@@ -28,7 +35,8 @@ This is a client registration system.
 		        $lastname = trim(fgets($handle));
 		        echo "\nEnter email: ";
 		        $email = trim(fgets($handle));
-		        while(!filter_var($email, FILTER_VALIDATE_EMAIL) && $email!=-1){
+		        while(!filter_var($email, FILTER_VALIDATE_EMAIL) && $email!=-1){ 
+		        	//while email not valid
 		        	echo "Email not valid. Please try again (-1 to exit)";
 		        	$email = trim(fgets($handle));
 		        }
@@ -62,7 +70,7 @@ This is a client registration system.
 		        }
 
 		    }elseif($argc >=6 && $argc <=8){
-		    	//user input all the arguments into the command
+		    	//user inputs all the arguments into the command
 		    	$firstname = $argv[2];
 		    	$lastname = $argv[3];
 		    	$email = $argv[4];
@@ -148,7 +156,7 @@ This is a client registration system.
 		    					echo "Enter a new secondary phone number: ";
 		    					$phone2 = trim(fgets($handle));
 		    					$phone2 = preg_replace("[^0-9]", "", $phone2);
-		    					while(strlen($phone2) != 9){
+		    					while(!(strlen($phone2) == 9 || empty($phone2))){
 		    						echo "Wrong number, try again: ";
 		    						$phone2 = trim(fgets($handle));
 		    						$phone2 = preg_replace("[^0-9]", "", $phone2);
@@ -186,7 +194,7 @@ This is a client registration system.
 			if(!deleteClient($email)){
 				echo "There is no user associated with this e-mail.\n";
 			}else{
-				echo "User deleted.\n";
+				echo "Client deleted.\n";
 			}
 		    break;
 		case "-import":
@@ -204,7 +212,7 @@ This is a client registration system.
 			if(file_exists($filename)){	
 				$file = fopen($filename, "r") or die("Error!");
 			}else{
-				echo "Error when opening the file, try again (maybe there is no such file?)\n";
+				echo "Error: There is no such file\n";
 				break;
 			}
 			while(!feof($file)){ // while not eof
